@@ -8,10 +8,12 @@ EasyOBS is a Python package that provides a simple interface to interact with th
 - Take screenshots of scenes.
 
 ## Installation
-To install EasyOBS, you can use pip:
+To install EasyOBS, clone the repository and install the package:
 
 ```bash
-pip install -r requirements.txt
+git clone https://github.com/benbaptist/easyobs.git
+cd easyobs
+pip install .
 ```
 
 ## Usage
