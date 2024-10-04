@@ -16,8 +16,8 @@ if __name__ == "__main__":
 
     # Print the current program and preview scenes
 
-    print(f"Program scene: {obs.program_scene.name}")
-    print(f"Preview scene: {obs.preview_scene.name}")
+    print(f"Program scene: {obs.scenes.program_scene.name}")
+    print(f"Preview scene: {obs.scenes.preview_scene.name}")
 
     # Grab a screenshot of each scene and save it to a file
     if not os.path.exists("screenshots"):
@@ -31,4 +31,4 @@ if __name__ == "__main__":
         
         # Randomly switch to a different scene, while we're at it
         if random.random() < 0.5:
-            obs.program_scene = scene.name
+            obs.scenes.program_scene = scene.name
