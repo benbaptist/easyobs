@@ -26,7 +26,7 @@ class Scene:
 
     def get_screenshot(self, width, height, quality=92):
         """
-        Get a screenshot of the scene.
+        Get a screenshot of the scene, with the specified width and height.
         """
 
         resp = self.root.client.get_source_screenshot(

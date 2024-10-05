@@ -1,6 +1,7 @@
 import obsws_python as obs
 
-from .scene import Scene
+from .scenes import Scenes
+
 from .video_settings import VideoSettings
 
 class EasyOBS:
@@ -10,6 +11,8 @@ class EasyOBS:
         self.password = password
         self.client = None
         self._connect()
+
+        self.scenes = Scenes(self)
 
     def _connect(self):
         try:
@@ -33,32 +36,6 @@ class EasyOBS:
     @studio_mode.setter
     def studio_mode(self, enabled):
         self.client.set_studio_mode_enabled(enabled)
-    
-    @property
-    def program_scene(self):
-        resp = self.client.get_current_program_scene()
-        return Scene(root=self, name=resp.scene_name, uuid=resp.scene_uuid)
-    
-    @program_scene.setter
-    def program_scene(self, scene_name):
-        self.client.set_current_program_scene(scene_name)
-    
-    @property
-    def preview_scene(self):
-        try:
-            resp = self.client.get_current_preview_scene()
-            return Scene(root=self, name=resp.scene_name, uuid=resp.scene_uuid)
-        except obs.error.OBSSDKRequestError as e:
-            return None
-    
-    @preview_scene.setter
-    def preview_scene(self, scene_name):
-        self.client.set_current_preview_scene(scene_name)
-
-    @property
-    def scenes(self):
-        resp = self.client.get_scene_list()
-        return [Scene(root=self, name=scene["sceneName"], uuid=scene["sceneUuid"]) for scene in resp.scenes]
     
     def __getitem__(self, scene_name):
         for scene in self.scenes:

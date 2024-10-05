@@ -1,6 +1,8 @@
 from easyobs import EasyOBS
+
 import random
 import os
+import time
 
 if __name__ == "__main__":
     obs = EasyOBS()
@@ -11,13 +13,26 @@ if __name__ == "__main__":
     # Print the current frame rate
     print(f"Frame rate: {obs.video_settings.frame_rate}")
 
+    # Print the width and height of the current output
+    print(f"Output width: {obs.video_settings.output_width}")
+    print(f"Output height: {obs.video_settings.output_height}")
+
     # Enable studio mode
     obs.studio_mode = True 
 
     # Print the current program and preview scenes
 
-    print(f"Program scene: {obs.program_scene.name}")
-    print(f"Preview scene: {obs.preview_scene.name}")
+    print(f"Program scene: {obs.scenes.program_scene.name}")
+    print(f"Preview scene: {obs.scenes.preview_scene.name}")
+
+    while False:
+        print(f"Program scene: {obs.scenes.program_scene.name}")
+        print(f"Preview scene: {obs.scenes.preview_scene.name}")
+
+        obs.scenes.preview_scene.get_screenshot(640, 360)
+        obs.scenes.program_scene.get_screenshot(640, 360)
+
+        time.sleep(0.01)
 
     # Grab a screenshot of each scene and save it to a file
     if not os.path.exists("screenshots"):
