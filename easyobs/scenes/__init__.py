@@ -13,7 +13,10 @@ class Scenes:
        return iter(self.list)
 
     def __getitem__(self, scene_name):
-        return self.get(scene_name)
+        for scene in self.list:
+            if scene.name == scene_name:
+                return scene
+        raise KeyError(f"Scene {scene_name} not found")
 
     @property
     def program_scene(self):
