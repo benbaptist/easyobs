@@ -1,9 +1,9 @@
-from easyobs import EasyOBS
+from easyobs.easyobs import EasyOBS
 
 import random
 import os
 import time
-import sys
+
 if __name__ == "__main__":
     obs = EasyOBS()
 
@@ -19,11 +19,6 @@ if __name__ == "__main__":
 
     # Enable studio mode
     obs.studio_mode = True 
-    obs.stream = True
-
-    print(f"Stream: {obs.stream}")
-
-    sys.exit(0)
 
     # Print the current program and preview scenes
 
@@ -52,4 +47,4 @@ if __name__ == "__main__":
         
         # Randomly switch to a different scene, while we're at it
         if random.random() < 0.5:
-            obs.program_scene = scene.name
+            obs.scenes.program_scene = scene
