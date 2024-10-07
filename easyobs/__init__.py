@@ -4,6 +4,7 @@ from functools import wraps
 
 from .scenes import Scenes
 from .video_settings import VideoSettings
+from .output_status import OutputStatus
 
 class EasyOBS:
     def __init__(self, host="localhost", port=4455, password=None):
@@ -66,7 +67,82 @@ class EasyOBS:
     
     @studio_mode.setter
     def studio_mode(self, enabled):
+        # If the studio mode is already in the desired state, do nothing
+        if self.studio_mode == enabled:
+            return
+        
         self.client.set_studio_mode_enabled(enabled)
+
+    @property
+    def stream(self):
+        resp = self.client.get_stream_status()
+
+        return OutputStatus(
+            type="stream",
+            active=resp.output_active,
+            bytes=resp.output_bytes,
+            duration=resp.output_duration,
+            timecode=resp.output_timecode,
+            skipped_frames=resp.output_skipped_frames,
+            total_frames=resp.output_total_frames,
+            congestion=resp.output_congestion,
+            reconnecting=resp.output_reconnecting
+        )
+    
+    @stream.setter
+    def stream(self, enabled):
+        # If the stream is already in the desired state, do nothing
+        if self.stream.active == enabled:
+            return
+        
+        if enabled:
+            self.client.start_stream()
+        else:
+            self.client.stop_stream()
+
+    @property
+    def recording(self):
+        resp = self.client.get_record_status()
+
+        return OutputStatus(
+            type="record",
+            active=resp.output_active,
+            paused=resp.output_paused,
+            bytes=resp.output_bytes,
+            duration=resp.output_duration,
+            timecode=resp.output_timecode
+        )
+    
+    @recording.setter
+    def recording(self, enabled):
+        # If the recording is already in the desired state, do nothing
+        if self.recording.active == enabled:
+            return
+        
+        if enabled:
+            self.client.start_record()
+        else:
+            self.client.stop_record()
+
+    @property
+    def virtual_cam(self):
+        resp = self.client.get_virtual_cam_status()
+        
+        return OutputStatus(
+            type="virtual_cam", 
+            active=resp.output_active
+        )
+    
+    @virtual_cam.setter
+    def virtual_cam(self, enabled):
+        # If the virtual cam is already in the desired state, do nothing
+        if self.virtual_cam.active == enabled:
+            return
+        
+        if enabled:
+            self.client.start_virtual_cam()
+        else:
+            self.client.stop_virtual_cam()
     
     def __getitem__(self, scene_name):
         for scene in self.scenes:
