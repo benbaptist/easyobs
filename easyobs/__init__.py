@@ -47,7 +47,14 @@ class EasyOBS:
     
     @property
     def connected(self):
-        return self._client is not None
+        if self._client is None:
+            return False
+        else:
+            try:
+                self._client.get_version()
+                return True
+            except Exception:
+                return False
     
     @property
     def video_settings(self):
