@@ -3,6 +3,9 @@ from .scene import Scene
 
 import obsws_python as obs
 
+# TODO: Implement a retry mechanism for the scenes property
+# TODO: Cache Scene objects for consistency
+
 class Scenes:
     def __init__(self, root):
         self.root = root
@@ -18,11 +21,15 @@ class Scenes:
         for scene in self.list:
             if scene.name == scene_name:
                 return scene
+            
         raise KeyError(f"Scene {scene_name} not found")
 
     @property
     def program_scene(self):
+        # Due to the intermittent nature of OBS's current program scene property,
+        # we need to implement a retry mechanism before giving up and raising an exception.
         i = 0
+
         while i < 3:
             try:
                 resp = self.client.get_current_program_scene()
@@ -36,12 +43,19 @@ class Scenes:
         raise Exception("Failed to get program scene")
     
     @program_scene.setter
-    def program_scene(self, scene_name):
-        self.client.set_current_program_scene(scene_name)
+    def program_scene(self, scene):
+        # If the scene is already in the desired state, do nothing
+        if scene.name == self.program_scene.name:
+            return
+        
+        self.client.set_current_program_scene(scene.name)
     
     @property
     def preview_scene(self):
+        # Due to the intermittent nature of OBS's current preview scene property,
+        # we need to implement a retry mechanism before giving up and raising an exception.
         i = 0
+
         while i < 3:
 
             try:
@@ -56,10 +70,21 @@ class Scenes:
         raise Exception("Failed to get preview scene")
     
     @preview_scene.setter
-    def preview_scene(self, scene_name):
-        self.client.set_current_preview_scene(scene_name)
+    def preview_scene(self, scene):
+        # If the scene is already in the desired state, do nothing
+        if scene.name == self.preview_scene.name:
+            return
+
+        self.client.set_current_preview_scene(scene.name)
 
     @property
     def list(self):
         resp = self.client.get_scene_list()
-        return [Scene(root=self.root, name=scene["sceneName"], uuid=scene["sceneUuid"]) for scene in resp.scenes]
+
+        return [
+            Scene(
+                root=self.root, 
+                name=scene["sceneName"], 
+                uuid=scene["sceneUuid"]
+            ) for scene in resp.scenes
+        ]
