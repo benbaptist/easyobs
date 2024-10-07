@@ -101,7 +101,7 @@ class EasyOBS:
             self.client.stop_stream()
 
     @property
-    def recording(self):
+    def record(self):
         resp = self.client.get_record_status()
 
         return OutputStatus(
@@ -113,10 +113,10 @@ class EasyOBS:
             timecode=resp.output_timecode
         )
     
-    @recording.setter
-    def recording(self, enabled):
+    @record.setter
+    def record(self, enabled):
         # If the recording is already in the desired state, do nothing
-        if self.recording.active == enabled:
+        if self.record.active == enabled:
             return
         
         if enabled:
