@@ -1,7 +1,8 @@
 import obsws_python as obs
+import time
+from functools import wraps
 
 from .scenes import Scenes
-
 from .video_settings import VideoSettings
 
 class EasyOBS:
@@ -9,21 +10,44 @@ class EasyOBS:
         self.host = host
         self.port = port
         self.password = password
-        self.client = None
-        self._connect()
+        self._client = None
 
         self.scenes = Scenes(self)
 
     def _connect(self):
+        self._client = None
+
         try:
-            self.client = obs.ReqClient(host=self.host, port=self.port, password=self.password)
+            self._client = obs.ReqClient(host=self.host, port=self.port, password=self.password)
         except Exception as e:
-            print(f"Failed to connect to OBS: {e}")
-            self.client = None
+            raise ConnectionError(f"Failed to connect to OBS: {e}")
+        
+    @property
+    def client(self):
+        self.ensure_connected()
+        return self._client
+
+    def ensure_connected(self, max_retries=20, retry_delay=5):
+        retries = 0
+
+        while retries < max_retries:
+            if self.connected:
+                return True
+            else:
+                print(f"Not connected. Attempting to reconnect (attempt {retries + 1}/{max_retries})...")
+
+                try:
+                    self._connect()
+                    return True
+                except ConnectionError as e:
+                    retries += 1
+                    time.sleep(retry_delay)
+
+        raise ConnectionRefusedError("Failed to connect to OBS after multiple attempts")
     
     @property
     def connected(self):
-        return self.client is not None
+        return self._client is not None
     
     @property
     def video_settings(self):

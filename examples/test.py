@@ -8,7 +8,7 @@ if __name__ == "__main__":
     obs = EasyOBS()
 
     # Make sure we're connected
-    assert obs.connected, "Failed to connect to OBS"
+    # assert obs.connected, "Failed to connect to OBS"
 
     # Print the current frame rate
     print(f"Frame rate: {obs.video_settings.frame_rate}")
@@ -25,6 +25,7 @@ if __name__ == "__main__":
     print(f"Program scene: {obs.scenes.program_scene.name}")
     print(f"Preview scene: {obs.scenes.preview_scene.name}")
 
+    # Optionally, you can loop through the scenes and grab screenshots by setting this to True
     while False:
         print(f"Program scene: {obs.scenes.program_scene.name}")
         print(f"Preview scene: {obs.scenes.preview_scene.name}")

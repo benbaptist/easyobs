@@ -1,6 +1,8 @@
 from typing import Dict, Type
 from .scene import Scene
 
+import obsws_python as obs
+
 class Scenes:
     def __init__(self, root):
         self.root = root
@@ -28,7 +30,7 @@ class Scenes:
             except AttributeError:
                 print("Failed to get program scene, retrying...")
             except obs.error.OBSSDKRequestError as e:
-                return None
+                raise ConnectionError(f"Network error while getting program scene: {e}")
             i += 1
         
         raise Exception("Failed to get program scene")
@@ -48,7 +50,7 @@ class Scenes:
             except AttributeError:
                 print("Failed to get preview scene, retrying...")
             except obs.error.OBSSDKRequestError as e:
-                return None
+                raise ConnectionError(f"Network error while getting preview scene: {e}")
             i += 1
 
         raise Exception("Failed to get preview scene")
