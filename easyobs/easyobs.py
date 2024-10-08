@@ -1,6 +1,7 @@
 import obsws_python as obs
 import time
 from functools import wraps
+import threading
 
 from .scenes import Scenes
 from .video_settings import VideoSettings
