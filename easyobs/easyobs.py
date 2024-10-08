@@ -7,11 +7,17 @@ from .video_settings import VideoSettings
 from .output_status import OutputStatus
 
 class EasyOBS:
-    def __init__(self, host="localhost", port=4455, password=None):
+    def __init__(self, host="localhost", port=4455, password=None, connect_on_init=True):
         self.host = host
         self.port = port
         self.password = password
         self._client = None
+        self._connecting_thread = None
+
+        if connect_on_init:
+            self._connecting_thread = threading.Thread(target=self.ensure_connected)
+            self._connecting_thread.daemon = True
+            self._connecting_thread.start()
 
         self.scenes = Scenes(self)
 
@@ -29,6 +35,11 @@ class EasyOBS:
         return self._client
 
     def ensure_connected(self, max_retries=20, retry_delay=5):
+        if self._connecting_thread is not None:
+            print("Waiting for connection thread to finish...")
+            self._connecting_thread.join()
+            return 
+
         retries = 0
 
         while retries < max_retries:
@@ -39,11 +50,13 @@ class EasyOBS:
 
                 try:
                     self._connect()
+                    self._connecting_thread = None
                     return True
                 except ConnectionError as e:
                     retries += 1
                     time.sleep(retry_delay)
 
+        self._connecting_thread = None
         raise ConnectionRefusedError("Failed to connect to OBS after multiple attempts")
     
     @property
