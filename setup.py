@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='easyobs',
-    version='0.2.0',
+    version='0.2.1',
     author='Ben Baptist',
     author_email='sawham6@gmail.com',
     description='easyobs adds a layer of pythonic abstraction over the OBS remote protocol',

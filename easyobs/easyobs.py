@@ -37,9 +37,14 @@ class EasyOBS:
 
     def ensure_connected(self, max_retries=20, retry_delay=5):
         if self._connecting_thread is not None:
+            # Wait for the connection thread to finish if already running
             print("Waiting for connection thread to finish...")
             self._connecting_thread.join()
-            return 
+
+            if self.connected:
+                return True
+            else:
+                raise ConnectionRefusedError("Failed to connect to OBS after multiple attempts")
 
         retries = 0
 
