@@ -7,6 +7,10 @@ import time
 import pygame
 import io
 
+CAPTURE_SIZE = (640, 360)
+WINDOW_SIZE = (640, 360)
+SCALE_FACTOR = 1  # Add this new constant for initial scaling
+
 def display_screenshot(screenshot):
     # Start timing
     start_time = time.time()
@@ -15,8 +19,12 @@ def display_screenshot(screenshot):
     image_stream = io.BytesIO(screenshot.getvalue())
     image = pygame.image.load(image_stream)
 
-    # Display the image
-    screen.blit(image, (0, 0))
+    # Scale image to window size
+    window_size = screen.get_size()
+    scaled_image = pygame.transform.scale(image, window_size)
+    
+    # Display the scaled image
+    screen.blit(scaled_image, (0, 0))
     pygame.display.flip()
 
     # End timing and calculate duration
@@ -27,8 +35,8 @@ def display_screenshot(screenshot):
 
 if __name__ == "__main__":
     obs = EasyOBS(
-        host="192.168.20.150",
-        password="21006t3unROaFCfi"
+        host="localhost",
+        password=""
     )
 
     while not obs.connected:
@@ -47,24 +55,31 @@ if __name__ == "__main__":
     else:
         format = image_formats[0]
 
+    format = "jpg"
+
     print(f"Using image format: {format}")
 
      # Initialize Pygame
     pygame.init()
 
     # Set up the display
-    screen = pygame.display.set_mode((640, 360))
+    screen = pygame.display.set_mode(WINDOW_SIZE, pygame.RESIZABLE)
     pygame.display.set_caption("OBS Screenshot")
 
-    # Make sure we're connected
-    # assert obs.connected, "Failed to connect to OBS"
+    # Add scale factor variable
+    scale_factor = SCALE_FACTOR
 
     while True:
         # Start timing
         start_time = time.time()
         
-        # Get screenshot
-        screenshot = obs.scenes.program_scene.get_screenshot(640, 360, 15, format=format)
+        # Get screenshot with dynamic resolution
+        screenshot = obs.scenes.program_scene.get_screenshot(
+            CAPTURE_SIZE[0] / scale_factor, 
+            CAPTURE_SIZE[1] / scale_factor, 
+            100, 
+            format=format
+        )
         
         # End timing and calculate duration
         end_time = time.time()
@@ -72,9 +87,20 @@ if __name__ == "__main__":
         print(f"Screenshot capture took {duration:.2f}ms")
 
         display_screenshot(screenshot)
+
+        # Update window title with current capture resolution
+        pygame.display.set_caption(f"OBS Screenshot ({int(CAPTURE_SIZE[0]/scale_factor)}x{int(CAPTURE_SIZE[1]/scale_factor)}) (scale: {scale_factor})")
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                pygame.quit()
+                exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_i:
+                    scale_factor = min(scale_factor + 1, 8)  # Limit max scaling
+                    print(f"Resolution scale factor: {scale_factor}")
+                elif event.key == pygame.K_o:
+                    scale_factor = max(scale_factor - 1, 1)  # Prevent scaling below 1
+                    print(f"Resolution scale factor: {scale_factor}")
 
         time.sleep(0.01)
