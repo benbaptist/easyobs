@@ -23,15 +23,23 @@ class Scene:
             self.root.video_settings.output_width, 
             self.root.video_settings.output_height
         )
+    
+    @property
+    def available_formats(self):
+        return self.root.version.supported_image_formats
 
-    def get_screenshot(self, width, height, quality=92):
+    def get_screenshot(self, width, height, quality=92, format="jpg"):
         """
         Get a screenshot of the scene, with the specified width and height.
+
+        :param width: The width of the screenshot.
+        :param height: The height of the screenshot.
+        :param quality: The quality of the screenshot, from 0 to 100, when using jpg.
         """
 
         resp = self.root.client.get_source_screenshot(
             self.name, 
-            "jpg", 
+            format, 
             width, 
             height, 
             quality

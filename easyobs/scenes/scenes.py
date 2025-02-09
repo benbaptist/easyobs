@@ -18,11 +18,18 @@ class Scenes:
        return iter(self.list)
 
     def __getitem__(self, scene_name):
-        for scene in self.list:
-            if scene.name == scene_name:
-                return scene
+        for i, scene in enumerate(self.list):
+            if type(scene_name) == int:
+                if i == scene_name:
+                    return scene
+            else:
+                if scene.name == scene_name:
+                    return scene
             
-        raise KeyError(f"Scene {scene_name} not found")
+        if type(scene_name) == int:
+            raise IndexError(f"Scene index {scene_name} out of range")
+        else:
+            raise KeyError(f"Scene {scene_name} not found")
 
     @property
     def program_scene(self):
@@ -65,6 +72,7 @@ class Scenes:
                 print("Failed to get preview scene, retrying...")
             except obs.error.OBSSDKRequestError as e:
                 raise ConnectionError(f"Network error while getting preview scene: {e}")
+            
             i += 1
 
         raise Exception("Failed to get preview scene")
@@ -76,6 +84,17 @@ class Scenes:
             return
 
         self.client.set_current_preview_scene(scene.name)
+
+    @property
+    def transition(self):
+        return self.client.get_scene_transition_override()
+
+    @transition.setter
+    def transition(self, transition):
+        self.client.set_scene_transition_override(transition)
+
+    def transition(self, scene):
+        pass
 
     @property
     def list(self):

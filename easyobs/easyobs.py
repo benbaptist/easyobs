@@ -14,6 +14,7 @@ class EasyOBS:
         self.password = password
         self._client = None
         self._connecting_thread = None
+        self._version = None
 
         if connect_on_init:
             self._connecting_thread = threading.Thread(target=self.ensure_connected)
@@ -43,6 +44,7 @@ class EasyOBS:
                 self._connecting_thread.join()
 
                 if self.connected:
+                    print("Connected to OBS")
                     return True
                 else:
                     raise ConnectionRefusedError("Failed to connect to OBS after multiple attempts")
@@ -67,12 +69,19 @@ class EasyOBS:
         raise ConnectionRefusedError("Failed to connect to OBS after multiple attempts")
     
     @property
+    def version(self):
+        if self._version is None:
+            self._version = self._client.get_version()
+
+        return self._version
+    
+    @property
     def connected(self):
         if self._client is None:
             return False
         else:
             try:
-                self._client.get_version()
+                self._version = self._client.get_version()
                 return True
             except Exception:
                 return False
