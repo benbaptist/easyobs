@@ -48,3 +48,7 @@ if __name__ == "__main__":
         # Randomly switch to a different scene, while we're at it
         if random.random() < 0.5:
             obs.scenes.program_scene = scene
+
+    while True:
+        print(obs.studio_mode)  # Keep the connection alive
+        time.sleep(1)
