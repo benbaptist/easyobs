@@ -1,6 +1,6 @@
 # EasyOBS
 
-EasyOBS is a Python package that provides a more pythonic interface to interact with the OBS (Open Broadcaster Software) remote protocol, using the `obsws_python` library. 
+EasyOBS is a Python package that provides a more pythonic interface to interact with the OBS (Open Broadcaster Software) remote protocol, utilizing the `obsws_python` library underneath it.
 
 ## Features
 - Access current scenes and their properties.
