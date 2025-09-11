@@ -4,6 +4,7 @@ from functools import wraps
 import threading
 
 from .scenes import Scenes
+from .events import Events
 from .video_settings import VideoSettings
 from .output_status import OutputStatus
 
@@ -28,8 +29,11 @@ class EasyOBS:
 
         try:
             self._client = obs.ReqClient(host=self.host, port=self.port, password=self.password)
+            self._event_client = obs.EventClient(host=self.host, port=self.port, password=self.password)
         except Exception as e:
             raise ConnectionError(f"Failed to connect to OBS: {e}")
+        
+        self.events = Events(self)
         
     @property
     def client(self):
